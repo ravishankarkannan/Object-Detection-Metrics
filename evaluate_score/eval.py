@@ -15,10 +15,11 @@ from BoundingBox import BoundingBox
 from BoundingBoxes import BoundingBoxes
 from Evaluator import *
 from utils import *
+import yaml
 from argparse import ArgumentParser
 
 
-def getBoundingBoxes():
+def getBoundingBoxes(parameter_config):
     """Read txt files containing bounding boxes (ground truth and detections)."""
     allBoundingBoxes = BoundingBoxes()
     import glob
@@ -58,7 +59,7 @@ def getBoundingBoxes():
                 y,
                 w,
                 h,
-                CoordinatesType.Relative, (200, 200),
+                CoordinatesType.Relative, (parameter_config["width"], parameter_config["height"]),
                 BBType.GroundTruth,
                 format=BBFormat.XYWH)
             allBoundingBoxes.addBoundingBox(bb)
@@ -98,7 +99,7 @@ def getBoundingBoxes():
                 y,
                 w,
                 h,
-                CoordinatesType.Relative, (200, 200),
+                CoordinatesType.Relative, (parameter_config["width"], parameter_config["height"]),
                 BBType.Detected,
                 confidence,
                 format=BBFormat.XYWH)
@@ -126,9 +127,18 @@ def createImages(dictGroundTruth, dictDetected):
         cv2.waitKey()
 
 
-def main():
+def get_parameters(config_file):
+    with open(config_file, 'rb') as file:
+        parameter_config = yaml.load(file.read(), Loader=yaml.FullLoader)
+        return parameter_config
+
+
+def main(args):
+    config_file_path = args.config
+    data_file_path = args.data_file_path
+    parameter_config = get_parameters(config_file_path)
     # Read txt files containing bounding boxes (ground truth and detections)
-    boundingboxes = getBoundingBoxes()
+    boundingboxes = getBoundingBoxes(parameter_config)
     # Uncomment the line below to generate images based on the bounding boxes
     # createImages(dictGroundTruth, dictDetected)
     # Create an evaluator object in order to obtain the metrics
@@ -164,7 +174,7 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--height', default=240)
-    parser.add_argument('--width',  default=360)
+    parser.add_argument('-c', '--config', default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score/config.yaml")
+    parser.add_argument('--data_file_path', default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score")
     args = parser.parse_args()
-    main()
+    main(args)
