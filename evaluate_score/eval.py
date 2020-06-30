@@ -59,7 +59,7 @@ def getBoundingBoxes(parameter_config):
                 y,
                 w,
                 h,
-                CoordinatesType.Relative, (parameter_config["width"], parameter_config["height"]),
+                CoordinatesType.Absolute, (parameter_config["width"], parameter_config["height"]),
                 BBType.GroundTruth,
                 format=BBFormat.XYWH)
             allBoundingBoxes.addBoundingBox(bb)
@@ -99,7 +99,7 @@ def getBoundingBoxes(parameter_config):
                 y,
                 w,
                 h,
-                CoordinatesType.Relative, (parameter_config["width"], parameter_config["height"]),
+                CoordinatesType.Absolute, (parameter_config["width"], parameter_config["height"]),
                 BBType.Detected,
                 confidence,
                 format=BBFormat.XYWH)
