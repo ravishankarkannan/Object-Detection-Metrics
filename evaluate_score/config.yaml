@@ -1,2 +1,3 @@
 width: 200
 height: 200
+iouThreshold: 0.3
