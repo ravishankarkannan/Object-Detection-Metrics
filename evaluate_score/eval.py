@@ -169,3 +169,8 @@ if __name__ == "__main__":
     parser.add_argument('-fp', '--data_file_path', default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score")
     args = parser.parse_args()
     main(args)
+
+# Modify the configuration file path and data file path.
+# Provide the directory path to the folder containing "detections" and "groundtruths" folders.
+# Make sure the detections are in the following format: <class> <class_confidence> <left> <top> <right> <bottom>
+# Make sure the groundtruths are in the following format: <class> <left> <top> <right> <bottom>
