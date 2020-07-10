@@ -13,7 +13,7 @@ def getBoundingBoxes(parameter_config, args):
     """Read txt files containing bounding boxes (ground truth and detections)."""
     allBoundingBoxes = BoundingBoxes()
     # Read ground truths
-    #currentPath = os.path.dirname(os.path.abspath(__file__))
+    # currentPath = os.path.dirname(os.path.abspath(__file__))
     folderGT = os.path.join(args.data_file_path, 'groundtruths')
     os.chdir(folderGT)
     files = glob.glob("*.txt")
@@ -29,7 +29,7 @@ def getBoundingBoxes(parameter_config, args):
     # x2, y2 represents the most bottom-right coordinates of the bounding box
     print(len(files))
     image_size_threshold = parameter_config["image_size_threshold"]
-
+    box_count = 0
     for f in files:
         nameOfImage = f.replace(".txt", "")
         fh1 = open(f, "r")
@@ -57,8 +57,10 @@ def getBoundingBoxes(parameter_config, args):
                 CoordinatesType.Absolute, (parameter_config["width"], parameter_config["height"]),
                 BBType.GroundTruth,
                 format=BBFormat.XYWH)
+            box_count+=1
             allBoundingBoxes.addBoundingBox(bb)
         fh1.close()
+    print("GroundTruth boxes count %s", box_count)
     # Read detections
     folderDet = os.path.join(args.data_file_path, 'detections')
     os.chdir(folderDet)
@@ -72,6 +74,7 @@ def getBoundingBoxes(parameter_config, args):
     # x, y represents the most top-left coordinates of the bounding box
     # x2, y2 represents the most bottom-right coordinates of the bounding box
     print(len(files))
+    box_count = 0
     for f in files:
         # nameOfImage = f.replace("_det.txt","")
         nameOfImage = f.replace(".txt", "")
@@ -103,8 +106,10 @@ def getBoundingBoxes(parameter_config, args):
                 BBType.Detected,
                 confidence,
                 format=BBFormat.XYWH)
+            box_count+=1
             allBoundingBoxes.addBoundingBox(bb)
         fh1.close()
+    print("Detection boxes count %s", box_count)
     return allBoundingBoxes
 
 
@@ -175,8 +180,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('-c', '--config', default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score/config.yaml")
-    parser.add_argument('-fp', '--data_file_path', default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score")
+    parser.add_argument('-c', '--config',
+                        default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score/config.yaml")
+    parser.add_argument('-fp', '--data_file_path',
+                        default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score")
     args = parser.parse_args()
     main(args)
 
