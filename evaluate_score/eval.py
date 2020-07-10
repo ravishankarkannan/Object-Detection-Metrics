@@ -28,6 +28,8 @@ def getBoundingBoxes(parameter_config, args):
     # x, y represents the most top-left coordinates of the bounding box
     # x2, y2 represents the most bottom-right coordinates of the bounding box
     print(len(files))
+    image_size_threshold = parameter_config["image_size_threshold"]
+
     for f in files:
         nameOfImage = f.replace(".txt", "")
         fh1 = open(f, "r")
@@ -39,8 +41,12 @@ def getBoundingBoxes(parameter_config, args):
             idClass = splitLine[0]  # class
             x = float(splitLine[1])  # confidence
             y = float(splitLine[2])
-            w = float(splitLine[3])
-            h = float(splitLine[4])
+            xmax = float(splitLine[3])
+            ymax = float(splitLine[4])
+            w = xmax - x
+            h = ymax - y
+            if w * h < image_size_threshold:
+                continue
             bb = BoundingBox(
                 nameOfImage,
                 idClass,
@@ -80,8 +86,12 @@ def getBoundingBoxes(parameter_config, args):
             confidence = float(splitLine[1])  # confidence
             x = float(splitLine[2])
             y = float(splitLine[3])
-            w = float(splitLine[4])
-            h = float(splitLine[5])
+            xmax = float(splitLine[4])
+            ymax = float(splitLine[5])
+            w = xmax - x
+            h = ymax - y
+            if w * h < image_size_threshold:
+                continue
             bb = BoundingBox(
                 nameOfImage,
                 idClass,
