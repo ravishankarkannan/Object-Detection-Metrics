@@ -1,0 +1,4 @@
+width: 640
+height: 480
+iouThreshold: 0.2
+image_size_threshold: 25
