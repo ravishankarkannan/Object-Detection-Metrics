@@ -6,7 +6,10 @@ from utils import *
 import yaml
 import glob
 import os
+import numpy as np
 from argparse import ArgumentParser
+
+class_map = {"0": "car", "1": "bicycle", "2": "person", "3": "sign"}
 
 
 def getBoundingBoxes(parameter_config, args):
@@ -28,8 +31,10 @@ def getBoundingBoxes(parameter_config, args):
     # x, y represents the most top-left coordinates of the bounding box
     # x2, y2 represents the most bottom-right coordinates of the bounding box
     print(len(files))
-    image_size_threshold = parameter_config["image_size_threshold"]
+    car_image_size_threshold = parameter_config["car_image_size_threshold"]
+    person_image_size_threshold = parameter_config["person_image_size_threshold"]
     box_count = 0
+    area = []
     for f in files:
         nameOfImage = f.replace(".txt", "")
         fh1 = open(f, "r")
@@ -45,8 +50,15 @@ def getBoundingBoxes(parameter_config, args):
             ymax = float(splitLine[4])
             w = xmax - x
             h = ymax - y
-            if w * h < image_size_threshold:
+            try:
+                area.append(int(w) * int(h))
+            except:
+                print(nameOfImage, w, h)
+            if class_map[idClass] == "car" and w * h < car_image_size_threshold:
                 continue
+            elif class_map[idClass] == "person" and w * h < person_image_size_threshold:
+                continue
+
             bb = BoundingBox(
                 nameOfImage,
                 idClass,
@@ -57,7 +69,7 @@ def getBoundingBoxes(parameter_config, args):
                 CoordinatesType.Absolute, (parameter_config["width"], parameter_config["height"]),
                 BBType.GroundTruth,
                 format=BBFormat.XYWH)
-            box_count+=1
+            box_count += 1
             allBoundingBoxes.addBoundingBox(bb)
         fh1.close()
     print("GroundTruth boxes count %s", box_count)
@@ -93,7 +105,9 @@ def getBoundingBoxes(parameter_config, args):
             ymax = float(splitLine[5])
             w = xmax - x
             h = ymax - y
-            if w * h < image_size_threshold:
+            if class_map[idClass] == "car" and w * h < car_image_size_threshold:
+                continue
+            elif class_map[idClass] == "person" and w * h < person_image_size_threshold:
                 continue
             bb = BoundingBox(
                 nameOfImage,
@@ -106,7 +120,7 @@ def getBoundingBoxes(parameter_config, args):
                 BBType.Detected,
                 confidence,
                 format=BBFormat.XYWH)
-            box_count+=1
+            box_count += 1
             allBoundingBoxes.addBoundingBox(bb)
         fh1.close()
     print("Detection boxes count %s", box_count)
@@ -143,6 +157,8 @@ def main(args):
     data_file_path = args.data_file_path
     parameter_config = get_parameters(config_file_path)
     iouThreshold = parameter_config["iouThreshold"]
+    car_image_size_threshold = parameter_config["car_image_size_threshold"]
+    person_image_size_threshold = parameter_config["person_image_size_threshold"]
     # Read txt files containing bounding boxes (ground truth and detections)
     boundingboxes = getBoundingBoxes(parameter_config, args)
     # Uncomment the line below to generate images based on the bounding boxes
@@ -158,7 +174,9 @@ def main(args):
         IOUThreshold=iouThreshold,  # IOU threshold
         method=MethodAveragePrecision.EveryPointInterpolation,  # As the official matlab code
         showAP=True,  # Show Average Precision in the title of the plot
-        showInterpolatedPrecision=True)  # Plot the interpolated precision curve
+        showInterpolatedPrecision=True,
+        car_image_size_threshold=car_image_size_threshold,
+        person_image_size_threshold=person_image_size_threshold)  # Plot the interpolated precision curve
     # Get metrics with PASCAL VOC metrics
     metricsPerClass = evaluator.GetPascalVOCMetrics(
         boundingboxes,  # Object containing all bounding boxes (ground truths and detections)

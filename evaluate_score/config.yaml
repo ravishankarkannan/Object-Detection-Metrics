@@ -1,4 +1,5 @@
-width: 640
-height: 480
-iouThreshold: 0.2
-image_size_threshold: 25
+width: 1280
+height: 720
+iouThreshold: 0.3
+car_image_size_threshold: 400
+person_image_size_threshold: 100
