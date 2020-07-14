@@ -201,11 +201,11 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--config',
                         default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score/config.yaml")
     parser.add_argument('-fp', '--data_file_path',
-                        default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score")
+                        default="/Users/ravikannan/Desktop/workspace/supporting_files/Object-Detection-Metrics/evaluate_score", help="path containing groundtruths and detections folderss")
     args = parser.parse_args()
     main(args)
 
 # Modify the configuration file path and data file path.
-# Provide the directory path to the folder containing "detections" and "groundtruths" folders.
+# Provide the directory path to the folder containing "detections" and "groundtruths" folders under data file path.
 # Make sure the detections are in the following format: <class> <class_confidence> <left> <top> <right> <bottom>
 # Make sure the groundtruths are in the following format: <class> <left> <top> <right> <bottom>

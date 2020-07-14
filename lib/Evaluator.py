@@ -19,7 +19,7 @@ from BoundingBox import *
 from BoundingBoxes import *
 from utils import *
 
-
+class_map = {"0": "car", "1": "bicycle", "2": "person", "3": "sign"}
 class Evaluator:
     def GetPascalVOCMetrics(self,
                             boundingboxes,
@@ -152,7 +152,9 @@ class Evaluator:
                                  showAP=False,
                                  showInterpolatedPrecision=False,
                                  savePath=None,
-                                 showGraphic=True):
+                                 showGraphic=True,
+                                 car_image_size_threshold=0,
+                                 person_image_size_threshold=0):
         """PlotPrecisionRecallCurve
         Plot the Precision x Recall curve for a given class.
         Args:
@@ -192,6 +194,12 @@ class Evaluator:
                 raise IOError('Error: Class %d could not be found.' % classId)
 
             classId = result['class']
+            if class_map[classId] == "car":
+                image_size_threshold = car_image_size_threshold
+            elif class_map[classId] == "person":
+                image_size_threshold = person_image_size_threshold
+            else:
+                image_size_threshold = 0
             precision = result['precision']
             recall = result['recall']
             average_precision = result['AP']
@@ -221,10 +229,13 @@ class Evaluator:
             plt.plot(recall, precision, label='Precision')
             plt.xlabel('recall')
             plt.ylabel('precision')
+            axes = plt.gca()
+            axes.set_xlim([0, 1])
+            axes.set_ylim([0, 1])
             if showAP:
                 ap_str = "{0:.2f}%".format(average_precision * 100)
                 # ap_str = "{0:.4f}%".format(average_precision * 100)
-                plt.title('Precision x Recall curve \nClass: %s, AP: %s' % (str(classId), ap_str))
+                plt.title('Precision x Recall curve \nClass: %s, AP: %s, \nIOU: %s, image size threshold: %s sq pixel' % (str(classId), ap_str, IOUThreshold, image_size_threshold))
             else:
                 plt.title('Precision x Recall curve \nClass: %s' % str(classId))
             plt.legend(shadow=True)
